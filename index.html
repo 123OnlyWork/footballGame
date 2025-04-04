@@ -63,12 +63,12 @@
     const enemyImage = new Image();
     enemyImage.src = 'https://123onlywork.github.io/footballGame/riba.png';
     
-    const player = { x: 50, y: canvas.height / 2, size: 70, image: playerImage };
+    const player = { x: 50, y: canvas.height / 2, size: 20, image: playerImage };
     const ball = { x: canvas.width - 50, y: canvas.height / 2, size: 15, color: 'orange' };
     const enemies = Array.from({ length: 10 }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: 90, // Размеры противников
+        size: 30, // Размеры противников
         image: enemyImage,
         dx: (Math.random() - 0.5) * 4,
         dy: (Math.random() - 0.5) * 4

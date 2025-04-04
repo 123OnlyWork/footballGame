@@ -11,11 +11,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 100vh; /* Убедитесь, что тело растягивается на весь экран */
             flex-direction: column;
+            background-color: black; /* Фон страницы */
         }
         canvas {
             display: block;
+            width: 100vw;  /* Растягиваем canvas на весь экран по ширине */
+            height: 100vh; /* Растягиваем canvas на весь экран по высоте */
             background: url('https://123onlywork.github.io/footballGame/Pole.png') no-repeat center center;
             background-size: cover;
         }
@@ -39,11 +42,10 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            user-select: none; /* Предотвращает выделение текста */
-            outline: none; /* Убирает обводку при фокусе */
-            pointer-events: auto; /* Разрешает взаимодействие только с кнопкой */
+            user-select: none;
+            outline: none;
+            pointer-events: auto;
         }
-        /* Убираем выделение текста и возможность фокуса на кнопках */
         .control-button:focus {
             outline: none;
             box-shadow: none;
@@ -65,6 +67,8 @@
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+
+    // Устанавливаем размер canvas в соответствии с размерами окна браузера
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
@@ -199,6 +203,12 @@
 
     // Постоянное обновление состояния игрока
     setInterval(movePlayer, 1000 / 60);
+
+    // Обновляем размеры канваса при изменении размера окна
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
 </script>
 
 </body>

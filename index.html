@@ -39,6 +39,17 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            user-select: none; /* Предотвращает выделение текста */
+            outline: none; /* Убирает обводку при фокусе */
+            pointer-events: auto; /* Разрешает взаимодействие только с кнопкой */
+        }
+        /* Убираем выделение текста и возможность фокуса на кнопках */
+        .control-button:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .control-button:active {
+            transform: scale(0.9); /* Дает эффект нажатия кнопки */
         }
     </style>
 </head>

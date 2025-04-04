@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Футбольная игра</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        canvas {
+            display: block;
+            background: url('C:/Users/eskri/Desktop/Pole.png') no-repeat center center;
+            background-size: cover;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .control-button {
+            width: 50px;
+            height: 50px;
+            margin: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div class="controls">
+    <button class="control-button" id="leftButton">&#8592;</button>
+    <button class="control-button" id="downButton">&#8595;</button>
+    <button class="control-button" id="upButton">&#8593;</button>
+    <button class="control-button" id="rightButton">&#8594;</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Загрузка изображений
+    const playerImage = new Image();
+    playerImage.src = 'C:/Users/eskri/Desktop/lesha.png';
+    const enemyImage = new Image();
+    enemyImage.src = 'C:/Users/eskri/Desktop/riba.png';
+    
+    const player = { x: 50, y: canvas.height / 2, size: 70, image: playerImage };
+    const ball = { x: canvas.width - 50, y: canvas.height / 2, size: 15, color: 'orange' };
+    const enemies = Array.from({ length: 10 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: 90, // Размеры противников
+        image: enemyImage,
+        dx: (Math.random() - 0.5) * 4,
+        dy: (Math.random() - 0.5) * 4
+    }));
+
+    let gameOver = false;
+
+    function drawImage(obj) {
+        ctx.drawImage(obj.image, obj.x - obj.size / 2, obj.y - obj.size / 2, obj.size, obj.size);
+    }
+
+    // Стенка слева на 50px
+    const wallX = 120;
+
+    function moveEnemies() {
+        enemies.forEach(enemy => {
+            enemy.x += enemy.dx;
+            enemy.y += enemy.dy;
+
+            // Противники отскакивают от стены
+            if (enemy.x < wallX + enemy.size / 2 || enemy.x > canvas.width) {
+                enemy.dx *= -1; // Отскакиваем от стенки слева и справа
+            }
+            if (enemy.y < 0 || enemy.y > canvas.height) {
+                enemy.dy *= -1;
+            }
+        });
+    }
+
+    function checkCollision(a, b) {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < (a.size + b.size) / 2;
+    }
+
+    function update() {
+        if (gameOver) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawImage(player);
+        enemies.forEach(drawImage);
+
+        moveEnemies();
+
+        if (checkCollision(player, ball)) {
+            alert('Вы выиграли!');
+            gameOver = true;
+        }
+
+        enemies.forEach(enemy => {
+            if (checkCollision(player, enemy)) {
+                alert('Вы проиграли!');
+                gameOver = true;
+            }
+        });
+
+        requestAnimationFrame(update);
+    }
+
+    // Управление стрелочками на экране
+    const speed = 5;
+    let moveUp = false, moveDown = false, moveLeft = false, moveRight = false;
+
+    function movePlayer() {
+        if (gameOver) return;
+
+        if (moveUp) player.y = Math.max(player.y - speed, 0);
+        if (moveDown) player.y = Math.min(player.y + speed, canvas.height);
+        if (moveLeft) player.x = Math.max(player.x - speed, 0);
+        if (moveRight) player.x = Math.min(player.x + speed, canvas.width);
+    }
+
+    // Обработчики для кнопок
+    function startMove(direction) {
+        switch (direction) {
+            case 'up': moveUp = true; break;
+            case 'down': moveDown = true; break;
+            case 'left': moveLeft = true; break;
+            case 'right': moveRight = true; break;
+        }
+    }
+
+    function stopMove(direction) {
+        switch (direction) {
+            case 'up': moveUp = false; break;
+            case 'down': moveDown = false; break;
+            case 'left': moveLeft = false; break;
+            case 'right': moveRight = false; break;
+        }
+    }
+
+    // Для кнопок
+    document.getElementById('upButton').addEventListener('touchstart', () => startMove('up'));
+    document.getElementById('downButton').addEventListener('touchstart', () => startMove('down'));
+    document.getElementById('leftButton').addEventListener('touchstart', () => startMove('left'));
+    document.getElementById('rightButton').addEventListener('touchstart', () => startMove('right'));
+
+    document.getElementById('upButton').addEventListener('touchend', () => stopMove('up'));
+    document.getElementById('downButton').addEventListener('touchend', () => stopMove('down'));
+    document.getElementById('leftButton').addEventListener('touchend', () => stopMove('left'));
+    document.getElementById('rightButton').addEventListener('touchend', () => stopMove('right'));
+
+    // Для десктопа
+    document.getElementById('upButton').addEventListener('mousedown', () => startMove('up'));
+    document.getElementById('downButton').addEventListener('mousedown', () => startMove('down'));
+    document.getElementById('leftButton').addEventListener('mousedown', () => startMove('left'));
+    document.getElementById('rightButton').addEventListener('mousedown', () => startMove('right'));
+
+    document.getElementById('upButton').addEventListener('mouseup', () => stopMove('up'));
+    document.getElementById('downButton').addEventListener('mouseup', () => stopMove('down'));
+    document.getElementById('leftButton').addEventListener('mouseup', () => stopMove('left'));
+    document.getElementById('rightButton').addEventListener('mouseup', () => stopMove('right'));
+
+    update();
+
+    // Постоянное обновление состояния игрока
+    setInterval(movePlayer, 1000 / 60);
+</script>
+
+</body>
+</html>
